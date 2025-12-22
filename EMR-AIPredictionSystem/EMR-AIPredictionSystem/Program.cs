@@ -1,10 +1,21 @@
-using EMR_AIPredictionSystem.Data;
+﻿using EMR_AIPredictionSystem.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.WithOrigins("yourfrontendaddress")//địa chỉ frontend
+            .AllowAnyMethod()
+            .AllowCredentials()
+            .AllowAnyHeader()
+           .SetIsOriginAllowed(_ => true); // cho phép mọi domain
+        });
+});
 builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -14,7 +25,7 @@ builder.Services.AddSwaggerGen();
 //connectSqlserver
 builder.Services.AddControllersWithViews();
 var app = builder.Build();
-
+app.UseCors("AllowAll");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
