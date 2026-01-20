@@ -9,7 +9,7 @@ namespace EMR_AIPredictionSystem.Common
 {
     public class Encrypt_Decrypt
     {
-        public static string Key { get; set; } = "njuepdonghai850b7bbsieu405cto8d0fkhong4c4c5lo080nhldc0";
+        public static string Key { get; set; } = "npuepdonghai850b7bbsieu405cto8d0fkhong4c4c5lo080nhldc0";
         public static string GenerateSalt()
         {
             var buf = new byte[16];
