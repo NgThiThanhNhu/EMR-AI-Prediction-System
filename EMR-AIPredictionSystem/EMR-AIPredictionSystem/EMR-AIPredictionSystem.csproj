@@ -23,10 +23,6 @@
 
   <ItemGroup>
     <Folder Include="Model\Enum\" />
-    <Folder Include="Model\Response\" />
-    <Folder Include="Model\Request\" />
-    <Folder Include="IService\" />
-    <Folder Include="Service\" />
   </ItemGroup>
 
 </Project>
