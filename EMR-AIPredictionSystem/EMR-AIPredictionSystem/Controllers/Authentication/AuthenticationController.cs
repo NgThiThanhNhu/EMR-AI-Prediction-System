@@ -1,9 +1,10 @@
 ﻿using EMR_AIPredictionSystem.IService.Authentication;
 using EMR_AIPredictionSystem.Model.Request.Authentication;
-using EMR_AIPredictionSystem.Model.Response.Authentication;
 using EMR_AIPredictionSystem.Model.Response;
+using EMR_AIPredictionSystem.Model.Response.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EMR_AIPredictionSystem.Controllers.Authentication
 {
@@ -46,5 +47,6 @@ namespace EMR_AIPredictionSystem.Controllers.Authentication
             return baseResponse;
 
         }
+
     }
 }

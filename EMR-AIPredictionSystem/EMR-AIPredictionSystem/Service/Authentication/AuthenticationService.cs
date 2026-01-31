@@ -1,14 +1,14 @@
-﻿using System.Net.Mail;
-using System.Net;
-using EMR_AIPredictionSystem.Common;
+﻿using EMR_AIPredictionSystem.Common;
 using EMR_AIPredictionSystem.Data;
 using EMR_AIPredictionSystem.IService.Authentication;
-using EMR_AIPredictionSystem.Model.Entities.UserManage;
+using EMR_AIPredictionSystem.Model.Entities;
 using EMR_AIPredictionSystem.Model.Request.Authentication;
 using EMR_AIPredictionSystem.Model.Response;
 using EMR_AIPredictionSystem.Model.Response.Authentication;
 using Microsoft.EntityFrameworkCore;
-using EMR_AIPredictionSystem.Model.Entities;
+using Microsoft.Extensions.Options;
+using System.Net;
+using System.Net.Mail;
 
 namespace EMR_AIPredictionSystem.Service.Authentication
 {
@@ -18,25 +18,27 @@ namespace EMR_AIPredictionSystem.Service.Authentication
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _contextAccessor;
         private static Dictionary<string, OtpData> otpStore = new();
-        public AuthenticationService(ApplicationDbContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        private readonly EmailSettings _emailSettings;
+        public AuthenticationService(ApplicationDbContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IOptions<EmailSettings> options)
         {
             _context = context;
             _configuration = configuration;
             _contextAccessor = httpContextAccessor;
+            _emailSettings = options.Value;
         }
 
         public async Task<BaseResponse<LoginResponse>> Login(LoginRequest loginRequest)
         {
             BaseResponse<LoginResponse> response = new BaseResponse<LoginResponse>();
-            ApplicationUser applicationUser = await _context.applicationUsers.Include(x=>x.Role).FirstOrDefaultAsync(x=>x.IsDeleted == false && x.isValidate == true && x.Email == loginRequest.Email);
-            if (applicationUser == null || applicationUser.isValidate == false)
+            User applicationUser = await _context.Users.Include(x => x.Role).FirstOrDefaultAsync(x => x.IsDeleted == false && x.IsVerified == true && x.Email == loginRequest.Email);
+            if (applicationUser == null || applicationUser.IsVerified == false)
             {
                 response.IsSuccess = false;
                 response.Message = "Tài khoản không tồn tại hoặc chưa được xác thực otp";
                 return response;
             }
             string hashInputPassword = Encrypt_Decrypt.EncodePassword(loginRequest.Password, applicationUser.Salt);
-            if (hashInputPassword != applicationUser.Password)
+            if (hashInputPassword != applicationUser.PasswordHash)
             {
                 response.IsSuccess = false;
                 response.Message = "Mật khẩu không chính xác";
@@ -63,11 +65,11 @@ namespace EMR_AIPredictionSystem.Service.Authentication
             response.data = loginResponse;
             return response;
         }
-        
+
         public async Task<BaseResponse<RegisterResponse>> Register(RegisterRequest registerRequest)
         {
             BaseResponse<RegisterResponse> response = new BaseResponse<RegisterResponse>();
-            ApplicationUser applicationUser = await _context.applicationUsers.FirstOrDefaultAsync(x => x.IsDeleted == false && x.Email == registerRequest.Email);
+            User applicationUser = await _context.Users.FirstOrDefaultAsync(x => x.IsDeleted == false && x.Email == registerRequest.Email);
             if (applicationUser != null)
             {
                 response.IsSuccess = false;
@@ -76,19 +78,20 @@ namespace EMR_AIPredictionSystem.Service.Authentication
             }
             string salt = Encrypt_Decrypt.GenerateSalt();
             string hashPassword = Encrypt_Decrypt.EncodePassword(registerRequest.Password, salt);
-            ApplicationUser user = new ApplicationUser();
+            User user = new User();
             user.Username = registerRequest.UserName;
             user.Email = registerRequest.Email;
-            user.Password = hashPassword;
+            user.PasswordHash = hashPassword;
             user.Salt = salt;
             user.CreateDate = DateTime.Now;
-            Role role = _context.roles.FirstOrDefault(x => x.RoleName == "patient" && x.IsDeleted == false);
+            Role role = _context.Roles.FirstOrDefault(x => x.RoleName == "Bệnh nhân" && x.IsDeleted == false);
             if (role is null)
             {
                 role = new Role();
-                role.Id = Guid.NewGuid();
-                role.RoleName = "patient";
-                _context.roles.Add(role);
+                //role.Id = Guid.NewGuid();
+                role.Id = "RL000000003";
+                role.RoleName = "Bệnh nhân";
+                _context.Roles.Add(role);
             }
             user.RoleId = role.Id;
             RegisterResponse registerResponse = new RegisterResponse();
@@ -101,7 +104,7 @@ namespace EMR_AIPredictionSystem.Service.Authentication
                 response.data = registerResponse;
                 return response;
             }
-            _context.applicationUsers.Add(user);
+            _context.Users.Add(user);
             await _context.SaveChangesAsync();
             OtpData data = new OtpData();
             data.Code = newOTP;
@@ -130,17 +133,23 @@ namespace EMR_AIPredictionSystem.Service.Authentication
                 MailMessage message = new MailMessage();
                 var smtp = new SmtpClient();
                 {
-                    smtp.Host = "smtp.gmail.com";
-                    smtp.Port = 587;
+                    //smtp.Host = "smtp.gmail.com";
+                    //smtp.Port = 587;
+                    smtp.Host = _emailSettings.Host;
+                    smtp.Port = _emailSettings.Port;
                     smtp.EnableSsl = true;
                     smtp.DeliveryMethod = System.Net.Mail.SmtpDeliveryMethod.Network;
 
                     smtp.UseDefaultCredentials = false;
-                    smtp.Credentials = new NetworkCredential()
-                    {
-                        UserName = ,
-                        Password = 
-                    };
+                    //smtp.Credentials = new NetworkCredential()
+                    //{
+                    //    UserName = ,
+                    //    Password =
+                    //};
+                    smtp.Credentials = new NetworkCredential(
+                         _emailSettings.Email,
+                         _emailSettings.AppPassword
+                     );
                 }
                 MailAddress fromAddress = new MailAddress("nguyenthithanhnhu163tp@gmail.com", "EMR-AIPrediction");
                 message.From = fromAddress;
@@ -160,7 +169,7 @@ namespace EMR_AIPredictionSystem.Service.Authentication
         public async Task<BaseResponse<OtpResponse>> ConfirmOTP(OtpRequest otpRequest)
         {
             BaseResponse<OtpResponse> response = new BaseResponse<OtpResponse>();
-            ApplicationUser user = await _context.applicationUsers.FirstOrDefaultAsync(x => x.isValidate == false && x.Email == otpRequest.Email);
+            User user = await _context.Users.FirstOrDefaultAsync(x => x.IsVerified == false && x.Email == otpRequest.Email);
             if (!otpStore.ContainsKey(user.Email))
             {
                 response.IsSuccess = false;
@@ -175,7 +184,7 @@ namespace EMR_AIPredictionSystem.Service.Authentication
                 response.Message = "Mã hết hiệu lực";
                 if (user != null)
                 {
-                    _context.applicationUsers.Remove(user);
+                    _context.Users.Remove(user);
                     _context.SaveChanges();
                 }
                 response.data = new OtpResponse { isValidate = false };
@@ -195,8 +204,8 @@ namespace EMR_AIPredictionSystem.Service.Authentication
                 response.data = new OtpResponse { isValidate = false };
                 return response;
             }
-            user.isValidate = true;
-            _context.applicationUsers.Update(user);
+            user.IsVerified = true;
+            _context.Users.Update(user);
             await _context.SaveChangesAsync();
             otpStore.Remove(otpRequest.Email);
             response.IsSuccess = true;

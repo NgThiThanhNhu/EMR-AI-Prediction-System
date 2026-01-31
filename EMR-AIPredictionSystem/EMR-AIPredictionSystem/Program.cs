@@ -1,11 +1,16 @@
-﻿using System.Security.Claims;
-using System.Text;
+﻿using EMR_AIPredictionSystem.Data;
+using EMR_AIPredictionSystem.IService;
+
 using EMR_AIPredictionSystem.Data;
 using EMR_AIPredictionSystem.IService.Authentication;
+using EMR_AIPredictionSystem.Model.Entities;
+using EMR_AIPredictionSystem.Service;
 using EMR_AIPredictionSystem.Service.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +57,9 @@ builder.Services.AddAuthentication(options =>
     };
 });
 builder.Services.AddAuthorization();
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings")
+);
 // Add services to the container.
 
 // Cấu hình Cookie Authentication
@@ -69,9 +77,10 @@ builder.Services.AddControllersWithViews();
 //connectSqlserver
 builder.Services.AddDbContext<ApplicationDbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 builder.Services.AddHttpContextAccessor();
+//Khai báo các service
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IPatientService, PatientService>();
 var app = builder.Build();
 app.UseCors("AllowAll");
 // Configure the HTTP request pipeline.

@@ -22,7 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\" />
     <Folder Include="Model\Enum\" />
+    <Folder Include="Model\Request\Admin\" />
+    <Folder Include="Model\Response\Admin\" />
   </ItemGroup>
 
 </Project>
