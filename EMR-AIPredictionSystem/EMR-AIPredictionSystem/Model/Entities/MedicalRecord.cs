@@ -15,6 +15,9 @@ public partial class MedicalRecord
 
     public string? AppointmentId { get; set; }
 
+    // ✅ FK tới MedicalDocument (1:1)
+    public string MedicalDocumentId { get; set; } = null!;
+
     public string? Symptoms { get; set; }
 
     public string? ClinicalNotes { get; set; }
@@ -37,21 +40,25 @@ public partial class MedicalRecord
 
     public Guid? PaymentConfirmedByUserId { get; set; }
 
-    public virtual ICollection<Aidiagnosis> Aidiagnoses { get; set; } = new List<Aidiagnosis>();
+    public virtual MedicalDocument MedicalDocument { get; set; } = null!;
 
     public virtual Appointment? Appointment { get; set; }
-
-    public virtual ICollection<ClinicalVital> ClinicalVitals { get; set; } = new List<ClinicalVital>();
 
     public virtual Department? Department { get; set; }
 
     public virtual Doctor? Doctor { get; set; }
 
-    public virtual ICollection<LabResult> LabResults { get; set; } = new List<LabResult>();
-
     public virtual Patient Patient { get; set; } = null!;
 
     public virtual User? PaymentConfirmedByUser { get; set; }
+
+    // 1:1 (logic)
+    public virtual ClinicalVital? ClinicalVital { get; set; }
+
+    // 1:N
+    public virtual ICollection<LabResult> LabResults { get; set; } = new List<LabResult>();
+
+    public virtual ICollection<Aidiagnosis> Aidiagnoses { get; set; } = new List<Aidiagnosis>();
 
     public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
 }

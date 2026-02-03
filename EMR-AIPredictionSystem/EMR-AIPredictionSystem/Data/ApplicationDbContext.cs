@@ -54,6 +54,7 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<FileCategory> FileCategories { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

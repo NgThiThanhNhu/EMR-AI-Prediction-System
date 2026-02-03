@@ -1,4 +1,5 @@
-﻿using EMR_AIPredictionSystem.Model.Request.User;
+﻿using EMR_AIPredictionSystem.Model.Request.MedicalFile;
+using EMR_AIPredictionSystem.Model.Request.User;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 
@@ -114,6 +115,17 @@ namespace EMR_AIPredictionSystem.Utils
             // 3. Email (nếu có)
             if (!Validator.IsValidEmail(request.Email))
                 errors.Add("Email không hợp lệ.");
+            return errors;
+        }
+
+        public static List<string> ValidateMedicalFile(CreateMedicalFileRequest request)
+        {
+            var errors = new List<string>();
+            int currentYear = DateTime.Now.Year;
+            if (request.Year <= 1899 || request.Year > currentYear)
+            {
+                errors.Add("Năm phải lớn hơn 1900 và không được lớn hơn năm hiện tại");
+            }
             return errors;
         }
         //public static List<string> ValidateClass(Class classObj)

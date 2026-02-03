@@ -21,9 +21,10 @@ namespace EMR_AIPredictionSystem.Configuration.ClinicalVitalConfiguration
                 .HasDefaultValueSql("(sysdatetime())")
                 .HasColumnType("datetime");
 
-            builder.HasOne(d => d.MedicalRecord).WithMany(p => p.ClinicalVitals)
-                .HasForeignKey(d => d.MedicalRecordId)
-                .HasConstraintName("FK_Vital_Record");
+            builder.HasOne(v => v.MedicalRecord)
+            .WithOne(r => r.ClinicalVital)
+            .HasForeignKey<ClinicalVital>(v => v.MedicalRecordId)
+            .HasConstraintName("FK_Vital_Record");
         }
     }
 }

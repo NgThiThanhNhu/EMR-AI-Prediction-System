@@ -81,6 +81,7 @@ builder.Services.AddHttpContextAccessor();
 //Khai báo các service
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IMedicalFileService, MedicalFileService>();
 var app = builder.Build();
 app.UseCors("AllowAll");
 // Configure the HTTP request pipeline.

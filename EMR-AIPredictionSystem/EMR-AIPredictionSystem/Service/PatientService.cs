@@ -167,7 +167,7 @@ namespace EMR_AIPredictionSystem.Service
             var patient = _context.Patients
                 .Include(p => p.Person).ThenInclude(p => p.User)
                 .FirstOrDefault(p => p.Id == id && p.IsDeleted == false);
-            //chưa có check email đã tồn tại hay chưa(nhớ làm nếu có user)
+            //đã có check email đã tồn tại hay chưa(nhớ làm nếu có user)
             if (patient != null) {
                 if (patient.Person.User != null && !string.IsNullOrWhiteSpace(request.Email))
                 {
@@ -270,6 +270,42 @@ namespace EMR_AIPredictionSystem.Service
                 IsSuccess = true,
                 Message = "Xóa bệnh nhân thành công",
                 data = null
+            };
+        }
+
+        public async Task<BaseResponse<PatientResponse>> GetPatientById(string id)
+        {
+            var response = new BaseResponse<List<PatientResponse>>();
+            var patient = _context.Patients
+                .Include(p => p.Person)
+                .ThenInclude(p => p.User)
+                .FirstOrDefault(p => p.Id == id && p.IsDeleted == false);
+            if (patient == null)
+            {
+                return new BaseResponse<PatientResponse>
+                {
+                    IsSuccess = false,
+                    Message = "Bệnh nhân không tồn tại",
+                    data = null
+                };
+            }
+            else return new BaseResponse<PatientResponse>
+            {
+                IsSuccess = true,
+                Message = "Lấy thông tin bệnh nhân thành công",
+                data = new PatientResponse
+                {
+                    Id = patient.Id,
+                    FullName = patient.Person.FullName,
+                    Gender = patient.Person.Gender == true ? "Nam" : "Nữ",
+                    Email = patient.Person.User != null ? patient.Person.User.Email : null,
+                    PhoneNumber = patient.Person.PhoneNumber,
+                    InsuranceNumber = patient.InsuranceNumber,
+                    AvatarPath = patient.Person.AvatarPath,
+                    DateOfBirth = patient.Person.DateOfBirth,
+                    Province = patient.Person.Address?.Split(" - ").LastOrDefault(),
+                    Ward = patient.Person.Address?.Split(" - ").FirstOrDefault()
+                }
             };
         }
     }

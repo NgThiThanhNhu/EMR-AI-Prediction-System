@@ -22,10 +22,6 @@ namespace EMR_AIPredictionSystem.Configuration.MedicalDocumentConfiguration
             builder.Property(e => e.MedicalFileId)
                 .HasMaxLength(11)
                 .IsUnicode(false);
-            builder.Property(e => e.RelatedEntityType).HasMaxLength(30);
-            builder.Property(e => e.RelatedRecordId)
-                .HasMaxLength(11)
-                .IsUnicode(false);
             builder.Property(e => e.Status)
                 .HasMaxLength(30)
                 .HasDefaultValue("DRAFT");

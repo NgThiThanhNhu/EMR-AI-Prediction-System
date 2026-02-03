@@ -16,8 +16,12 @@ public partial class MedicalFile
     public Guid? CreatedBy { get; set; }
 
     public virtual User? CreatedByNavigation { get; set; }
+    public string Status { get; set; }
 
     public virtual ICollection<MedicalDocument> MedicalDocuments { get; set; } = new List<MedicalDocument>();
 
     public virtual Patient Patient { get; set; } = null!;
+
+    public string FileCategoryId { get; set; }
+    public FileCategory FileCategory { get; set; }
 }

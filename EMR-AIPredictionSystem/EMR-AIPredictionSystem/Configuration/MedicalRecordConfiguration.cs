@@ -1,6 +1,7 @@
 ﻿using EMR_AIPredictionSystem.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace EMR_AIPredictionSystem.Configuration.MedicalRecordConfiguration
 {
@@ -23,6 +24,9 @@ namespace EMR_AIPredictionSystem.Configuration.MedicalRecordConfiguration
                 .HasMaxLength(11)
                 .IsUnicode(false);
             builder.Property(e => e.DoctorId)
+                .HasMaxLength(11)
+                .IsUnicode(false);
+            builder.Property(e => e.MedicalDocumentId)
                 .HasMaxLength(11)
                 .IsUnicode(false);
             builder.Property(e => e.PaidAt).HasColumnType("datetime");
@@ -61,6 +65,12 @@ namespace EMR_AIPredictionSystem.Configuration.MedicalRecordConfiguration
             builder.HasOne(d => d.PaymentConfirmedByUser).WithMany(p => p.MedicalRecords)
                 .HasForeignKey(d => d.PaymentConfirmedByUserId)
                 .HasConstraintName("FK_Records_PaymentUser");
+
+            builder.HasOne(r => r.MedicalDocument)
+                .WithOne(d => d.MedicalRecord)
+                .HasForeignKey<MedicalRecord>(r => r.MedicalDocumentId)
+                .HasConstraintName("FK_Record_Document")
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

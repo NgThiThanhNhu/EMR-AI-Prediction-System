@@ -31,6 +31,14 @@ namespace EMR_AIPredictionSystem.Controllers
             return baseResponse;
         }
 
+        //[GET] /patient/id
+        [HttpGet("patient-profile/{id}")]
+        public async Task<BaseResponse<PatientResponse>> GetPatientById(string id)
+        {
+            BaseResponse<PatientResponse> baseResponse = await _patientService.GetPatientById(id);
+            return baseResponse;
+        }
+
         //[POST] /admin/create-patient
         [HttpPost("create-patient")]
         public async Task<BaseResponse<PatientResponse>> CreateNewPatient([FromBody] CreatePatientRequest request)
@@ -38,7 +46,7 @@ namespace EMR_AIPredictionSystem.Controllers
             BaseResponse<PatientResponse> baseResponse = await _patientService.CreateNewPatient(request);
             return baseResponse;
         }
-        //[PUT] /api/class/id
+        //[PUT] /update-patient/id
         [HttpPut("update-patient/{id}")]
         public async Task<BaseResponse<PatientResponse>> UpdateExistPatient(string id, [FromBody] UpdatePatientRequest request)
         {
@@ -46,14 +54,14 @@ namespace EMR_AIPredictionSystem.Controllers
             return baseResponse;
         }
 
-        // [DELETE] /api/class/id
+        // [DELETE] /delete-patient/id
         [HttpDelete("delete-patient/{id}")]
         public async Task<BaseResponse<PatientResponse>> DeleteExistPatient(string id)
         {
             BaseResponse<PatientResponse> baseResponse = await _patientService.DeleteExistPatient(id);
             return baseResponse;
         }
-
+        
     }
 
 }

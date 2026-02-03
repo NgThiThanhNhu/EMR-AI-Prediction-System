@@ -11,15 +11,12 @@ public partial class MedicalDocument
 
     public string DocumentTypeId { get; set; } = null!;
 
-    public string? RelatedEntityType { get; set; }
-
-    public string? RelatedRecordId { get; set; }
-
     public string? Status { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 
     public virtual ICollection<DigitalSignature> DigitalSignatures { get; set; } = new List<DigitalSignature>();
+    public virtual MedicalRecord MedicalRecord { get; set; } = null!;
 
     public virtual DocumentType DocumentType { get; set; } = null!;
 
