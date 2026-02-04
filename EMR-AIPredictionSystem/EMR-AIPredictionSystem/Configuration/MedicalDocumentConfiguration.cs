@@ -22,6 +22,9 @@ namespace EMR_AIPredictionSystem.Configuration.MedicalDocumentConfiguration
             builder.Property(e => e.MedicalFileId)
                 .HasMaxLength(11)
                 .IsUnicode(false);
+            builder.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasDefaultValue("Chưa đặt tên");
             builder.Property(e => e.Status)
                 .HasMaxLength(30)
                 .HasDefaultValue("DRAFT");
