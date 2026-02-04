@@ -128,7 +128,7 @@ namespace EMR_AIPredictionSystem.Service
                            DocumentTypeName = d.DocumentType.Name,
                            Status = d.Status ?? "Chưa xác định",
                            CreatedAt = d.CreatedAt ?? DateTime.Now,
-
+                           Name = d.Name,
                            MedicalRecords = d.MedicalRecord == null
                                ? new List<MedicalRecordResponse>()
                                : new List<MedicalRecordResponse>
@@ -390,7 +390,7 @@ namespace EMR_AIPredictionSystem.Service
             _context.MedicalFiles.Update(file);
             await _context.SaveChangesAsync();
             response.IsSuccess = true;
-            response.Message = "Không thể dữ liệu Medical File, tất cả dữ liệu nên được lưu trữ";
+            response.Message = "Không thể xóa dữ liệu Medical File, tất cả dữ liệu nên được lưu trữ";
             response.data = await GetMedicalFile(id);
             return response;
         }
