@@ -1,6 +1,7 @@
 ﻿using EMR_AIPredictionSystem.IService;
 using EMR_AIPredictionSystem.Model.Request.MedicalFile;
 using EMR_AIPredictionSystem.Model.Response;
+using EMR_AIPredictionSystem.Model.Response.DigitalSignature;
 using EMR_AIPredictionSystem.Model.Response.MedicalFiles;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,20 +11,20 @@ namespace EMR_AIPredictionSystem.Controllers
     [ApiController]
     public class DigitalSignaturesController : Controller
     {
-        private readonly IMedicalFileService _medicalFileService;
+        private readonly IDigitalSignatureService _digitalSignatureService;
 
-        //public DigitalSignaturesController(IMedicalFileService medicalFileService)
-        //{
-        //    _medicalFileService = medicalFileService;
-        //}
+        public DigitalSignaturesController(IDigitalSignatureService digitalSignatureService)
+        {
+            _digitalSignatureService = digitalSignatureService;
+        }
 
-        ////[GET] /admin/all-patients
-        //[HttpGet("medical-records")]
-        //public async Task<BaseResponse<List<MedicalFilePagingResponse>>> GetMedicalFilesPage([FromQuery] GetMedicalFilePagingRequest request)
-        //{
-        //    BaseResponse<List<MedicalFilePagingResponse>> baseResponse = await _medicalFileService.GetMedicalFilesPage(request);
-        //    return baseResponse;
-        //}
+        //[GET] /admin/all-
+        [HttpGet("all-signatures")]
+        public async Task<BaseResponse<List<GetAllDigitalSignatureResponse>>> GetDigitalSignatures()
+        {
+            BaseResponse<List<GetAllDigitalSignatureResponse>> baseResponse = await _digitalSignatureService.GetDigitalSignatures();
+            return baseResponse;
+        }
 
         ////[GET] /medical-file/id
         //[HttpGet("medical-file/{id}")]

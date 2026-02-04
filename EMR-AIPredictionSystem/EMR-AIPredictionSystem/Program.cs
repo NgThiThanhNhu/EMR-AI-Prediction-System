@@ -83,6 +83,7 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IMedicalFileService, MedicalFileService>();
 builder.Services.AddScoped<IMedicalDocumentService, MedicalDocumentService>();
+builder.Services.AddScoped<IDigitalSignatureService, DigitalSignatureService>();
 var app = builder.Build();
 app.UseCors("AllowAll");
 // Configure the HTTP request pipeline.
